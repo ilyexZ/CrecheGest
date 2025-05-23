@@ -5,7 +5,6 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../widgets/common/custom_app_bar.dart';
 import 'children_tab.dart';
-import 'employees_tab.dart';
 import 'parents_tab.dart';
 
 class AdminDashboard extends ConsumerStatefulWidget {
@@ -20,7 +19,6 @@ class _AdminDashboardState extends ConsumerState<AdminDashboard> {
 
   final List<Widget> _tabs = [
     const ChildrenTab(),
-    const EmployeesTab(),
     const ParentsTab(),
   ];
 
@@ -51,10 +49,7 @@ class _AdminDashboardState extends ConsumerState<AdminDashboard> {
             icon: Icon(Icons.child_care),
             label: AppStrings.children,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt),
-            label: AppStrings.employees,
-          ),
+          
           BottomNavigationBarItem(
             icon: Icon(Icons.family_restroom),
             label: AppStrings.parents,

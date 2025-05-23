@@ -86,7 +86,7 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
       itemCount: state.children.length,
       itemBuilder: (context, index) => ChildCard(
         child: state.children[index],
-        onDelete: () => _deleteChild(state.children[index].id),
+        onDelete: () => _deleteChild(state.children[index].id.toString()),
       ),
     );
   }

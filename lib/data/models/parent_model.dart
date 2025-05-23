@@ -36,13 +36,13 @@ class Parent {
 
   factory Parent.fromJson(Map<String, dynamic> json) {
     return Parent(
-      id: json['id'],
+      id: json['id'].toString(),
       firstName: json['firstName'],
       lastName: json['lastName'],
       email: json['email'],
-      phoneNumber: json['phone'],
+      phoneNumber: json['phone'].toString(),
       address: json['address'],
-      childrenIds: List<String>.from(json['childrenIds'] ?? []),
+      childrenIds: List<String>.from(json['childrenIds'] ?? [""]),
       isActive: json['isActive'] ?? true,
     );
   }

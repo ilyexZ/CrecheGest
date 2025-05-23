@@ -1,3 +1,4 @@
+
 class Child {
   final String id;
   final String firstName;
@@ -49,14 +50,14 @@ class Child {
 
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
-      id: json['id'],
+      id: json['id'].toString(),
       firstName: json['firstName'],
       lastName: json['lastName'],
       birthDate: DateTime.parse(json['birthDate']),
-      parentId: json['parentId'],
-      medicalInfo: json['medicalInfo'],
-      allergies: List<String>.from(json['allergies'] ?? []),
-      enrollmentDate: DateTime.parse(json['enrollmentDate']),
+      parentId: json['parent']['id'].toString(),
+      medicalInfo: json['medicalInfo']??"",
+      allergies: List<String>.from(json['allergies'] ?? [""]),
+      enrollmentDate: DateTime.parse(json['enrollmentDate']??"0000-00-00"),
       isActive: json['isActive'] ?? true,
     );
   }

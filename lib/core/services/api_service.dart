@@ -23,7 +23,7 @@ class ApiService {
     _password = password;
     final basicAuth =
         'Basic ${base64Encode(utf8.encode('$username:$password'))}';
-    dio.options.headers['Authorization'] = basicAuth;
+    //dio.options.headers['Authorization'] = basicAuth;
   }
 
   // Auth endpoints
@@ -64,11 +64,13 @@ class ApiService {
   Future<List<Map<String, dynamic>>> getChildren() async {
     try {
       final response = await dio.get('/children');
+      print("Chlidren: $response");
       // Check if the response is a List or a Map
       if (response.data is List) {
         return List<Map<String, dynamic>>.from(response.data);
       } else {
         final data = response.data as Map<String, dynamic>;
+        print(data);
         return List<Map<String, dynamic>>.from(data['children'] ?? []);
       }
     } on DioException catch (e) {
@@ -95,6 +97,7 @@ class ApiService {
   Future<List<Map<String, dynamic>>> getParents() async {
     try {
       final response = await dio.get('/parents');
+      print("parents: $response");
       
       // Fixed response parsing logic
       if (response.data is List) {
@@ -108,16 +111,17 @@ class ApiService {
           'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');
     }
   }
-
-  // Employees endpoints
-  Future<List<Map<String, dynamic>>> getEmployees() async {
-    try {
-      final response = await dio.get('/employees');
-      final data = response.data as Map<String, dynamic>;
-      return List<Map<String, dynamic>>.from(data['employees'] ?? []);
-    } on DioException catch (e) {
-      throw Exception(
-          'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');
-    }
+  Future<Map<String, dynamic>> createParent(Map<String, dynamic> parentData) async {
+  try {
+    final response = await dio.post(
+      '/parents',
+      data: parentData,
+    );
+    return response.data;
+  } on DioException catch (e) {
+    throw Exception(
+        'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');
   }
+}
+ 
 }
