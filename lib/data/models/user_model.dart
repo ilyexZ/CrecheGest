@@ -34,17 +34,22 @@ class User {
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
-    final fullName = json['fullName']?.split(' ') ?? ['', ''];
-    return User(
-      id: json['id'],
-      email: json['email'],
-      firstName: fullName[0],
-      lastName: fullName.length > 1 ? fullName[1] : '',
-      role: UserRole.values.firstWhere(
-        (e) => e.name.toLowerCase() == json['role']['name'].toLowerCase(),
-      ),
-      createdAt: DateTime.parse(json['createdAt']),
-      isActive: json['isActive'] ?? true,
-    );
-  }
+  // Handle potential single-word fullName
+  final fullNameParts = (json['fullName'] ?? '').split(' ');
+  final firstName = fullNameParts.isNotEmpty ? fullNameParts[0] : '';
+  final lastName = fullNameParts.length > 1 ? fullNameParts.sublist(1).join(' ') : '';
+
+  return User(
+    id: json['id'].toString(),
+    email: json['email'] ?? '',
+    firstName: firstName,
+    lastName: lastName,
+    role: UserRole.values.firstWhere(
+      (e) => e.name == json['role']['name'].toUpperCase(),
+      orElse: () => UserRole.admin,
+    ),
+    createdAt: DateTime.parse(json['createdAt']??"2022-12-03"),
+    isActive: json['active'] ?? true,
+  );
+}
 }

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import '../../presentation/screens/login_screen.dart';
 import '../../presentation/screens/admin/admin_dashboard.dart';
-import '../../presentation/screens/common/loading_screen.dart';
 // Import other screens as needed
 
 class AppRoutes {

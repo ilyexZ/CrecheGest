@@ -174,15 +174,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final success = await ref.read(authProvider.notifier).login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
-
-    if (success && mounted) {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.adminDashboard);
-    }
-  }
+  if (!_formKey.currentState!.validate()) return;
+  final success = await ref.read(authProvider.notifier).login(
+    _emailController.text.trim(),
+    _passwordController.text,
+  );
+ 
+}
 }

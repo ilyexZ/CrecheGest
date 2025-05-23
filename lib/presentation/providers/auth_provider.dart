@@ -1,6 +1,9 @@
 // lib/presentation/providers/auth_provider.dart
+import 'dart:developer';
+
 import 'package:creche/core/services/api_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../data/models/user_model.dart';
 
 class AuthState {
@@ -32,61 +35,61 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final ApiService _apiService;
+  final FlutterSecureStorage _storage;
+  static const _keyUsername = 'auth_username';
+  static const _keyPassword = 'auth_password';
 
-  AuthNotifier(this._apiService) : super(AuthState());
+  AuthNotifier(this._apiService)
+      : _storage = const FlutterSecureStorage(),
+        super(AuthState()) {
+    _loadCredentials();
+  }
 
-  Future<bool> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
-    
-    try {
-      final response = await _apiService.login(email, password);
-      final user = User.fromJson(response['user']);
-      
-      // Store token if provided
-      // if (response['token'] != null) {
-      //   await _apiService.setAuthToken(response['token']);
-      // }
-      
-      state = state.copyWith(currentUser: user, isLoading: false);
-      return true;
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString().contains('401') 
-            ? 'Email ou mot de passe incorrect'
-            : 'Erreur de connexion. Veuillez réessayer.',
-      );
-      return false;
+  // Load stored credentials and attempt auto-login
+  Future<void> _loadCredentials() async {
+    final storedUser = await _storage.read(key: _keyUsername);
+    final storedPass = await _storage.read(key: _keyPassword);
+    if (storedUser != null && storedPass != null) {
+      await login(storedUser, storedPass, store: false);
     }
   }
+
+  Future<bool> login(String email, String password, {bool store = true}) async {
+  state = state.copyWith(isLoading: true, errorMessage: null);
+  try {
+    final response = await _apiService.login(email, password);
+    print(response);
+    final userJson = response['user'] as Map<String, dynamic>;
+    final user = User.fromJson(userJson);
+    _apiService.setCredentials(email, password);
+    state = state.copyWith(currentUser: user, isLoading: false);
+    if (store) {
+      await _storage.write(key: _keyUsername, value: email);
+      await _storage.write(key: _keyPassword, value: password);
+    }
+    return true;
+  } catch (e) {
+    // Log the error for debugging
+    print('Login error: $e');
+    state = state.copyWith(
+      isLoading: false,
+      errorMessage: 'Invalid username or password', // Specific error
+    );
+    return false;
+  }
+}
 
   Future<void> logout() async {
     state = state.copyWith(isLoading: true);
-    
     try {
       await _apiService.logout();
-      await _apiService.clearAuthToken();
-      state = AuthState();
-    } catch (e) {
-      // Still clear local state even if server call fails
-      state = AuthState();
+    } catch (_) {
+      // ignore errors
     }
-  }
-
-  Future<void> checkAuthStatus() async {
-    state = state.copyWith(isLoading: true);
-    
-    try {
-      final userInfo = await _apiService.getCurrentUser();
-      if (userInfo != null) {
-        final user = User.fromJson(userInfo);
-        state = state.copyWith(currentUser: user, isLoading: false);
-      } else {
-        state = state.copyWith(isLoading: false);
-      }
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-    }
+    // Clear state and storage
+    state = AuthState();
+    await _storage.delete(key: _keyUsername);
+    await _storage.delete(key: _keyPassword);
   }
 }
 
@@ -98,4 +101,4 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(apiService);
 });
 
-final authProviderNotifier = Provider<AuthNotifier>((ref) => ref.read(authProvider.notifier));
+final authNotifierProvider = Provider<AuthNotifier>((ref) => ref.read(authProvider.notifier));

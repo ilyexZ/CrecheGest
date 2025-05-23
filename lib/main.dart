@@ -1,12 +1,9 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/constants/app_colors.dart';
 import 'core/constants/app_routes.dart';
 import 'presentation/providers/auth_provider.dart';
-import 'presentation/providers/child_provider.dart';
-import 'presentation/providers/employee_provider.dart';
-import 'presentation/providers/parent_provider.dart';
+
 import 'presentation/screens/login_screen.dart';
 import 'presentation/screens/admin/admin_dashboard.dart';
 import 'presentation/screens/common/loading_screen.dart';
@@ -23,6 +20,7 @@ class CrecheGestApp extends ConsumerWidget {
     final authState = ref.watch(authProvider);
     
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'CrecheGest',
       theme: ThemeData(
         primarySwatch: Colors.blue,
