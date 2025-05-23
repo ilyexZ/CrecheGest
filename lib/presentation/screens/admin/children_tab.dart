@@ -35,11 +35,11 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
         onRefresh: _handleRefresh,
         child: _buildContent(childState),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddChildDialog(context),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => _showAddChildDialog(context),
+      //   backgroundColor: AppColors.primary,
+      //   child: const Icon(Icons.add, color: Colors.white),
+      // ),
     );
   }
 

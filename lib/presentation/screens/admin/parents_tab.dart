@@ -1,4 +1,5 @@
 // lib/presentation/screens/admin/parents_tab.dart
+import 'package:creche/presentation/screens/admin/add_parent_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
@@ -116,8 +117,9 @@ class _ParentsTabState extends ConsumerState<ParentsTab> {
   }
 
   void _showAddParentDialog(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Fonctionnalité d\'ajout à venir')),
-    );
+    Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const AddParentScreen()),
+  );
   }
 }

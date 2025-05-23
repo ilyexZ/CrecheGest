@@ -1,4 +1,5 @@
 // lib/presentation/widgets/admin/child_card.dart
+import 'package:creche/presentation/screens/admin/child_details_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../data/models/child_model.dart';
 import '../../../core/constants/app_colors.dart';
@@ -73,10 +74,12 @@ class ChildCard extends StatelessWidget {
   }
 
   void _navigateToDetails(BuildContext context) {
-    // TODO: Navigate to child details
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Détails de ${child.fullName}')),
-    );
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ChildDetailsScreen(child: child),
+    ),
+  );
   }
 
   void _navigateToEdit(BuildContext context) {
