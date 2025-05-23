@@ -18,8 +18,12 @@ class _ParentsTabState extends ConsumerState<ParentsTab> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(parentProvider.notifier).loadMockData();
+      ref.read(parentProvider.notifier).loadParents();
     });
+  }
+
+  Future<void> _handleRefresh() async {
+    await ref.read(parentProvider.notifier).refreshParents();
   }
 
   @override
@@ -27,7 +31,10 @@ class _ParentsTabState extends ConsumerState<ParentsTab> {
     final parentState = ref.watch(parentProvider);
 
     return Scaffold(
-      body: _buildContent(parentState),
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: _buildContent(parentState),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddParentDialog(context),
         backgroundColor: AppColors.primary,
@@ -38,31 +45,38 @@ class _ParentsTabState extends ConsumerState<ParentsTab> {
 
   Widget _buildContent(ParentState state) {
     if (state.isLoading) return const LoadingScreen();
+    
     if (state.errorMessage != null) {
-      return ErrorScreen(
-        message: state.errorMessage!,
-        onRetry: () => ref.read(parentProvider.notifier).loadMockData(),
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ErrorScreen(
+          message: state.errorMessage!,
+          onRetry: () => ref.read(parentProvider.notifier).loadParents(),
+        ),
       );
     }
 
     if (state.parents.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.family_restroom,
-              size: 64,
-              color: AppColors.textSecondary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Aucun parent enregistré',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.family_restroom,
+                size: 64,
                 color: AppColors.textSecondary,
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                'Aucun parent enregistré',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -102,7 +116,6 @@ class _ParentsTabState extends ConsumerState<ParentsTab> {
   }
 
   void _showAddParentDialog(BuildContext context) {
-    // TODO: Implement parent creation dialog
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Fonctionnalité d\'ajout à venir')),
     );

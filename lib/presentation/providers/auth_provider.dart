@@ -49,9 +49,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _loadCredentials() async {
     final storedUser = await _storage.read(key: _keyUsername);
     final storedPass = await _storage.read(key: _keyPassword);
-    if (storedUser != null && storedPass != null) {
-      await login(storedUser, storedPass, store: false);
-    }
+    // if (storedUser != null && storedPass != null) {
+    //   await login(storedUser, storedPass, store: false);
+    // }
   }
 
   Future<bool> login(String email, String password, {bool store = true}) async {
@@ -80,17 +80,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
   Future<void> logout() async {
-    state = state.copyWith(isLoading: true);
-    try {
-      await _apiService.logout();
-    } catch (_) {
-      // ignore errors
-    }
-    // Clear state and storage
-    state = AuthState();
-    await _storage.delete(key: _keyUsername);
-    await _storage.delete(key: _keyPassword);
+  state = state.copyWith(isLoading: false);
+  
+  try {
+    await _apiService.logout(); // This will now clear the auth header
+  } catch (_) {
+    // ignore errors but still clear local state
   }
+  
+  // Clear state and storage
+  state = AuthState();
+  await _storage.delete(key: _keyUsername);
+  await _storage.delete(key: _keyPassword);
+}
 }
 
 // Providers

@@ -1,3 +1,5 @@
+import 'package:creche/core/services/api_service.dart';
+import 'package:creche/presentation/providers/auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/child_model.dart';
 
@@ -26,81 +28,42 @@ class ChildState {
 }
 
 class ChildNotifier extends StateNotifier<ChildState> {
-  ChildNotifier() : super(ChildState());
+  final ApiService _apiService;
+  ChildNotifier(this._apiService) : super(ChildState());
 
-  Future<void> addChild(Child child) async {
-    state = state.copyWith(isLoading: true);
+  Future<void> loadChildren() async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
-      state = state.copyWith(
-        children: [...state.children, child],
-        isLoading: false,
-      );
+      final response = await _apiService.getChildren();
+      final children = response.map((json) => Child.fromJson(json)).toList();
+      state = state.copyWith(children: children, isLoading: false);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Erreur lors de l\'ajout de l\'enfant',
+        errorMessage: 'Failed to load children: ${e.toString()}',
       );
     }
   }
 
-  Future<void> updateChild(Child child) async {
+  Future<void> refreshChildren() async {
+    await loadChildren();
+  }
+
+  Future<void> deleteChild(String id) async {
     state = state.copyWith(isLoading: true);
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
-      final index = state.children.indexWhere((c) => c.id == child.id);
-      if (index != -1) {
-        final newChildren = List<Child>.from(state.children);
-        newChildren[index] = child;
-        state = state.copyWith(children: newChildren, isLoading: false);
-      }
+      await _apiService.dio.delete('/children/$id');
+      await loadChildren(); // Refresh the list after deletion
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Erreur lors de la mise à jour',
+        errorMessage: 'Failed to delete child: ${e.toString()}',
       );
     }
-  }
-
-  Future<void> deleteChild(String childId) async {
-    state = state.copyWith(isLoading: true);
-    try {
-      await Future.delayed(const Duration(milliseconds: 500));
-      state = state.copyWith(
-        children: state.children.where((c) => c.id != childId).toList(),
-        isLoading: false,
-      );
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Erreur lors de la suppression',
-      );
-    }
-  }
-
-  void loadMockData() {
-    state = state.copyWith(isLoading: true);
-    final mockChildren = [
-      Child(
-        id: '1',
-        firstName: 'Emma',
-        lastName: 'Martin',
-        birthDate: DateTime(2020, 5, 15),
-        parentId: 'p1',
-        enrollmentDate: DateTime(2023, 9, 1),
-        allergies: ['Nuts'],
-      ),
-      Child(
-        id: '2',
-        firstName: 'Lucas',
-        lastName: 'Dubois',
-        birthDate: DateTime(2019, 8, 22),
-        parentId: 'p2',
-        enrollmentDate: DateTime(2023, 9, 1),
-      ),
-    ];
-    state = state.copyWith(children: mockChildren, isLoading: false);
   }
 }
 
-final childProvider = StateNotifierProvider<ChildNotifier, ChildState>((ref) => ChildNotifier());
+final childProvider = StateNotifierProvider<ChildNotifier, ChildState>((ref) {
+  final apiService = ref.watch(apiServiceProvider);
+  return ChildNotifier(apiService);
+});

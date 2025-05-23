@@ -32,12 +32,13 @@ class CrecheGestApp extends ConsumerWidget {
   }
 
   Widget _getHomeScreen(AuthState authState) {
-    if (authState.isLoading) {
-      return const LoadingScreen();
-    }
+    
     
     if (authState.isLoggedIn) {
       return const AdminDashboard(); // Route based on user role
+    }
+    if(authState.isLoading){
+      return LoadingScreen();
     }
     
     return const LoginScreen();

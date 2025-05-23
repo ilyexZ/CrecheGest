@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8081/api';
-
   final Dio dio;
   String? _username;
   String? _password;
@@ -29,7 +28,6 @@ class ApiService {
 
   // Auth endpoints
   Future<Map<String, dynamic>> login(String email, String password) async {
-    // Removed setCredentials call here
     try {
       final response = await dio.post(
         '/auth/login',
@@ -38,6 +36,10 @@ class ApiService {
           'password': password,
         },
       );
+      
+      // Set credentials after successful login
+      setCredentials(email, password);
+      
       return response.data;
     } on DioException catch (e) {
       throw Exception(
@@ -46,11 +48,15 @@ class ApiService {
   }
 
   Future<void> logout() async {
-    // If you have a logout endpoint, it'll now send the same Basic header.
     try {
-      await dio.post('/auth/logout');
-    } on DioException {
+      //await dio.post('/auth/logout');
+    } catch (_) {
       // Ignore errors during logout
+    } finally {
+      // Clear stored credentials and remove auth header
+      _username = null;
+      _password = null;
+      dio.options.headers.remove('Authorization');
     }
   }
 
@@ -58,8 +64,13 @@ class ApiService {
   Future<List<Map<String, dynamic>>> getChildren() async {
     try {
       final response = await dio.get('/children');
-      final data = response.data as Map<String, dynamic>;
-      return List<Map<String, dynamic>>.from(data['children'] ?? []);
+      // Check if the response is a List or a Map
+      if (response.data is List) {
+        return List<Map<String, dynamic>>.from(response.data);
+      } else {
+        final data = response.data as Map<String, dynamic>;
+        return List<Map<String, dynamic>>.from(data['children'] ?? []);
+      }
     } on DioException catch (e) {
       throw Exception(
           'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');
@@ -84,8 +95,14 @@ class ApiService {
   Future<List<Map<String, dynamic>>> getParents() async {
     try {
       final response = await dio.get('/parents');
-      final data = response.data as Map<String, dynamic>;
-      return List<Map<String, dynamic>>.from(data['parents'] ?? []);
+      
+      // Fixed response parsing logic
+      if (response.data is List) {
+        return List<Map<String, dynamic>>.from(response.data);
+      } else {
+        final data = response.data as Map<String, dynamic>;
+        return List<Map<String, dynamic>>.from(data['parents'] ?? []);
+      }
     } on DioException catch (e) {
       throw Exception(
           'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');

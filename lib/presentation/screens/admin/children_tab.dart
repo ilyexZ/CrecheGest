@@ -18,8 +18,12 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(childProvider.notifier).loadMockData();
+      ref.read(childProvider.notifier).loadChildren();
     });
+  }
+
+  Future<void> _handleRefresh() async {
+    await ref.read(childProvider.notifier).refreshChildren();
   }
 
   @override
@@ -27,7 +31,10 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
     final childState = ref.watch(childProvider);
 
     return Scaffold(
-      body: _buildContent(childState),
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        child: _buildContent(childState),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddChildDialog(context),
         backgroundColor: AppColors.primary,
@@ -38,31 +45,38 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
 
   Widget _buildContent(ChildState state) {
     if (state.isLoading) return const LoadingScreen();
+    
     if (state.errorMessage != null) {
-      return ErrorScreen(
-        message: state.errorMessage!,
-        onRetry: () => ref.read(childProvider.notifier).loadMockData(),
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ErrorScreen(
+          message: state.errorMessage!,
+          onRetry: () => ref.read(childProvider.notifier).loadChildren(),
+        ),
       );
     }
 
     if (state.children.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.child_care,
-              size: 64,
-              color: AppColors.textSecondary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Aucun enfant enregistré',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.child_care,
+                size: 64,
                 color: AppColors.textSecondary,
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                'Aucun enfant enregistré',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -102,7 +116,6 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
   }
 
   void _showAddChildDialog(BuildContext context) {
-    // TODO: Implement child creation dialog
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Fonctionnalité d\'ajout à venir')),
     );

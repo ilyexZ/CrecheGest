@@ -179,6 +179,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _emailController.text.trim(),
     _passwordController.text,
   );
- 
+  if (success && mounted) {
+    // Change this line to navigate to admin dashboard
+    Navigator.of(context).pushReplacementNamed(AppRoutes.adminDashboard);
+  }
 }
 }
