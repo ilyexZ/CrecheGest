@@ -151,5 +151,17 @@ Future<Map<String, dynamic>> getParentByEmail(String email) async {
   final response = await dio.get('/parents/email/$email');
   return response.data;
 }
+Future<Map<String, dynamic>> updateChild(String id, Map<String, dynamic> childData) async {
+  try {
+    final response = await dio.put(
+      '/children/$id',
+      data: childData,
+    );
+    return response.data;
+  } on DioException catch (e) {
+    throw Exception(
+      'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');
+  }
+}
  
 }

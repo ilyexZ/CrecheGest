@@ -19,6 +19,7 @@ class ParentDashboard extends ConsumerWidget {
 
     return Scaffold(
       appBar: CustomAppBar(
+        
         title: AppStrings.children,
         showLogout: true,
         automaticallyImplyLeading: false,

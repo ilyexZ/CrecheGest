@@ -25,12 +25,24 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final authState = ref.watch(authProvider);
 
     return AppBar(
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 20,
-        ),
+      title: Row(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 5),
+            height: 50,
+            width: 50,
+            
+            child: Image.asset("resources/img/crechegest.png"),
+            
+          ),
+          
+          Text(            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 20,
+            ),
+          ),
+        ],
       ),
       backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
@@ -46,8 +58,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 value: 'profile',
                 child: Row(
                   children: [
-                    const Icon(Icons.person, size: 20),
-                    const SizedBox(width: 8),
+                    const Icon(Icons.person_2_outlined, size: 20,color: Colors.black,),
+                    const SizedBox(width: 6),
                     Text(authState.currentUser!.fullName),
                   ],
                 ),

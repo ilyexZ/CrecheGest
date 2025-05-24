@@ -20,13 +20,17 @@ class ParentDetailsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(parent.fullName)),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical:  8.0,horizontal: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Divider(),
             _buildDetailItem('Email', parent.email),
+            Divider(),
             _buildDetailItem('Phone', parent.phoneNumber),
+            Divider(),
             _buildDetailItem('Address', parent.address),
+            Divider(),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

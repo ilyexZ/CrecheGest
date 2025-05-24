@@ -1,4 +1,6 @@
 
+import 'package:creche/data/models/parent_model.dart';
+
 class Child {
   final String id;
   final String firstName;
@@ -9,6 +11,7 @@ class Child {
   final List<String> allergies;
   final DateTime enrollmentDate;
   final bool isActive;
+   final Parent parent;
 
   Child({
     required this.id,
@@ -20,6 +23,7 @@ class Child {
     this.allergies = const [],
     required this.enrollmentDate,
     this.isActive = true,
+    required this.parent,
   });
 
   String get fullName => '$firstName $lastName';
@@ -45,6 +49,7 @@ class Child {
       'allergies': allergies,
       'enrollmentDate': enrollmentDate.toIso8601String(),
       'isActive': isActive,
+      //'parent' : parent
     };
   }
 
@@ -59,6 +64,7 @@ class Child {
       allergies: List<String>.from(json['allergies'] ?? [""]),
       enrollmentDate: DateTime.parse(json['enrollmentDate']??"0000-00-00"),
       isActive: json['isActive'] ?? true,
+      parent: Parent.fromJson(json['parent']),
     );
   }
 }

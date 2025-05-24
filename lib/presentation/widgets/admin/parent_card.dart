@@ -20,6 +20,7 @@ class ParentCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       child: ListTile(
+        minTileHeight: 100,
         leading: CircleAvatar(
           backgroundColor: AppColors.secondary,
           child: Text(

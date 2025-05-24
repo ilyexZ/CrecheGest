@@ -1,5 +1,6 @@
-// lib/presentation/widgets/admin/child_card.dart
+
 import 'package:creche/presentation/screens/admin/child_details_screen.dart';
+import 'package:creche/presentation/screens/admin/edit_child_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../data/models/child_model.dart';
 import '../../../core/constants/app_colors.dart';
@@ -20,8 +21,10 @@ class ChildCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       child: ListTile(
+        minTileHeight: 100,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16),
         leading: CircleAvatar(
-          backgroundColor: AppColors.secondary,
+          backgroundColor: AppColors.primary,
           child: Text(
             child.firstName[0].toUpperCase(),
             style: const TextStyle(
@@ -42,15 +45,6 @@ class ChildCard extends StatelessWidget {
           children: [
             Text('${child.ageInYears} ans'),
             const SizedBox(height: 4),
-            if (child.allergies.isNotEmpty)
-              Text(
-                'Allergies: ${child.allergies.join(', ')}',
-                style: TextStyle(
-                  color: AppColors.error,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
           ],
         ),
         trailing: Row(
@@ -83,9 +77,11 @@ class ChildCard extends StatelessWidget {
   }
 
   void _navigateToEdit(BuildContext context) {
-    // TODO: Navigate to child edit
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Éditer ${child.fullName}')),
-    );
+     Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditChildScreen(child: child),
+              ),
+            );
   }
 }

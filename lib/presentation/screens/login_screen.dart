@@ -72,24 +72,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Column(
       children: [
         Container(
-          width: 80,
-          height: 80,
+          width: 120,
+          height: 120,
           decoration: BoxDecoration(
-            color: AppColors.primary,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Icon(
-            Icons.child_care,
-            size: 40,
-            color: Colors.white,
-          ),
+          child:  Image.asset("resources/img/crechegest.png")
         ),
         const SizedBox(height: 24),
         Text(
           AppStrings.appName,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: AppColors.primaryDark,
           ),
         ),
         const SizedBox(height: 8),

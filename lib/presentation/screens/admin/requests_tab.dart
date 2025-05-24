@@ -1,4 +1,5 @@
 // lib/presentation/screens/admin/requests_tab.dart
+import 'package:creche/core/constants/app_colors.dart';
 import 'package:creche/data/models/parent_request_model.dart';
 import 'package:creche/presentation/providers/parent_request_provider.dart';
 import 'package:creche/presentation/screens/admin/parent_request_details_screen.dart';
@@ -78,9 +79,8 @@ class _RequestsTabState extends ConsumerState<RequestsTab> {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: state.requests.length,
-      itemBuilder: (context, index) => _RequestItem(
-        request: state.requests[index],
-      ),
+      itemBuilder:
+          (context, index) => _RequestItem(request: state.requests[index]),
     );
   }
 }
@@ -94,15 +94,28 @@ class _RequestItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        minTileHeight: 100,
+        leading: CircleAvatar(
+          backgroundColor: AppColors.primaryDark,
+          child: Text(
+            request.firstName[0].toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         title: Text('${request.firstName} ${request.lastName}'),
         subtitle: Text(request.email),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ParentRequestDetailsScreen(request: request),
-          ),
-        ),
+        onTap:
+            () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => ParentRequestDetailsScreen(request: request),
+              ),
+            ),
       ),
     );
   }

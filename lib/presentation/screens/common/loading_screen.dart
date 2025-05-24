@@ -17,17 +17,13 @@ class LoadingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 150,
+              height: 150,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                //color: AppColors.primary,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Icon(
-                Icons.child_care,
-                size: 40,
-                color: Colors.white,
-              ),
+              child: Image.asset("resources/img/crechegest.png")
             ),
             const SizedBox(height: 32),
             const CircularProgressIndicator(
