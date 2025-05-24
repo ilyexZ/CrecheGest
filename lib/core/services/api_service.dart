@@ -133,7 +133,7 @@ class ApiService {
         'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');
   }
 }
-// In ApiService class
+// others
 Future<List<Map<String, dynamic>>> getPendingRequests() async {
   final response = await dio.get('/parent-requests/pending');
   return List<Map<String, dynamic>>.from(response.data);
@@ -145,6 +145,11 @@ Future<void> approveRequest(String requestId) async {
 
 Future<void> rejectRequest(String requestId) async {
   await dio.post('/parent-requests/$requestId/reject');
+
+}
+Future<Map<String, dynamic>> getParentByEmail(String email) async {
+  final response = await dio.get('/parents/email/$email');
+  return response.data;
 }
  
 }

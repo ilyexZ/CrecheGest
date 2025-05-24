@@ -1,6 +1,7 @@
 // lib/presentation/providers/parent_provider.dart
 import 'package:creche/core/services/api_service.dart';
 import 'package:creche/presentation/providers/auth_provider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/parent_model.dart';
 
@@ -62,9 +63,20 @@ class ParentNotifier extends StateNotifier<ParentState> {
       );
     }
   }
+  
 }
 
 final parentProvider = StateNotifierProvider<ParentNotifier, ParentState>((ref) {
   final apiService = ref.watch(apiServiceProvider);
   return ParentNotifier(apiService);
+});
+final parentByEmailProvider = FutureProvider.autoDispose.family<Parent?, String>((ref, email) async {
+  final apiService = ref.read(apiServiceProvider);
+  try {
+    final response = await apiService.dio.get('/parents/email/$email');
+    return Parent.fromJson(response.data);
+  } on DioException catch (e) {
+    if (e.response?.statusCode == 404) return null;
+    throw Exception('Failed to fetch parent: ${e.message}');
+  }
 });

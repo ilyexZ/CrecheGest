@@ -43,10 +43,12 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
 
   Widget _buildContent(ChildState state) {
     // Filter children based on parentId if provided
+    print("before filter${state.children}");
+    print ("parentId==${widget.parentId}");
     final filteredChildren = widget.parentId != null
         ? state.children.where((c) => c.parentId == widget.parentId).toList()
         : state.children;
-
+   print("AFTER filter${filteredChildren}");
     if (state.isLoading) return const LoadingScreen();
     
     if (state.errorMessage != null) {
