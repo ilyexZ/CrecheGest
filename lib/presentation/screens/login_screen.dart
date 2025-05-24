@@ -1,4 +1,5 @@
 // lib/presentation/screens/login_screen.dart
+import 'package:creche/presentation/screens/parent/SignupScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
@@ -143,12 +144,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginButton(AuthState authState) {
-    return CustomButton(
-      text: AppStrings.login,
-      onPressed: authState.isLoading ? null : _handleLogin,
-      isLoading: authState.isLoading,
-    );
-  }
+  return Column(
+    children: [
+      CustomButton(
+        text: AppStrings.login,
+        onPressed: authState.isLoading ? null : _handleLogin,
+        isLoading: authState.isLoading,
+      ),
+      const SizedBox(height: 16),
+      TextButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignupScreen()),
+        ),
+        child: const Text(
+          'Créer un compte parent',
+          style: TextStyle(color: AppColors.primary),
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildErrorMessage(String message) {
     return Container(

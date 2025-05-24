@@ -36,6 +36,7 @@ class _ParentsTabState extends ConsumerState<ParentsTab> {
         onRefresh: _handleRefresh,
         child: _buildContent(parentState),
       ),
+      persistentFooterButtons: [Center(child: IconButton(onPressed: _handleRefresh, icon: Icon(Icons.refresh, color: Colors.red,))),],
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddParentDialog(context),
         backgroundColor: AppColors.primary,
@@ -53,6 +54,7 @@ class _ParentsTabState extends ConsumerState<ParentsTab> {
         child: ErrorScreen(
           message: state.errorMessage!,
           onRetry: () => ref.read(parentProvider.notifier).loadParents(),
+          
         ),
       );
     }

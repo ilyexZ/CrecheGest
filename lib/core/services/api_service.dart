@@ -1,8 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8081/api';
+   static String get baseUrl {
+     bool isMobile = kIsWeb 
+        ? false 
+        : Platform.isAndroid || Platform.isIOS;
+        
+    return isMobile
+        ? 'http://192.168.236.145:8081/api' // Replace with actual IP
+        : 'http://localhost:8081/api';
+  }
   final Dio dio;
   String? _username;
   String? _password;
@@ -32,7 +42,7 @@ class ApiService {
       final response = await dio.post(
         '/auth/login',
         data: {
-          'username': email,
+          'email': email,
           'password': password,
         },
       );
@@ -64,13 +74,13 @@ class ApiService {
   Future<List<Map<String, dynamic>>> getChildren() async {
     try {
       final response = await dio.get('/children');
-      print("Chlidren: $response");
+      //print("Chlidren: $response");
       // Check if the response is a List or a Map
       if (response.data is List) {
         return List<Map<String, dynamic>>.from(response.data);
       } else {
         final data = response.data as Map<String, dynamic>;
-        print(data);
+        //print(data);
         return List<Map<String, dynamic>>.from(data['children'] ?? []);
       }
     } on DioException catch (e) {
@@ -122,6 +132,19 @@ class ApiService {
     throw Exception(
         'HTTP ${e.response?.statusCode}: ${e.response?.statusMessage}');
   }
+}
+// In ApiService class
+Future<List<Map<String, dynamic>>> getPendingRequests() async {
+  final response = await dio.get('/parent-requests/pending');
+  return List<Map<String, dynamic>>.from(response.data);
+}
+
+Future<void> approveRequest(String requestId) async {
+  await dio.post('/parent-requests/$requestId/approve');
+}
+
+Future<void> rejectRequest(String requestId) async {
+  await dio.post('/parent-requests/$requestId/reject');
 }
  
 }

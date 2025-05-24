@@ -119,7 +119,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              await ref.read(authProvider.notifier).logout();
+              await ref.read(authProvider.notifier).logout(ref);
               if (context.mounted) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.login,

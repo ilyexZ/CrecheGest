@@ -7,7 +7,8 @@ import '../../widgets/admin/child_card.dart';
 import '../common/loading_screen.dart';
 
 class ChildrenTab extends ConsumerStatefulWidget {
-  const ChildrenTab({super.key});
+  final String? parentId;
+  const ChildrenTab({super.key, this.parentId});
 
   @override
   ConsumerState<ChildrenTab> createState() => _ChildrenTabState();
@@ -35,15 +36,17 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
         onRefresh: _handleRefresh,
         child: _buildContent(childState),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () => _showAddChildDialog(context),
-      //   backgroundColor: AppColors.primary,
-      //   child: const Icon(Icons.add, color: Colors.white),
-      // ),
+      persistentFooterButtons: [Center(child: IconButton(onPressed: _handleRefresh, icon: Icon(Icons.refresh, color: Colors.red,))),],
     );
   }
+  
 
   Widget _buildContent(ChildState state) {
+    // Filter children based on parentId if provided
+    final filteredChildren = widget.parentId != null
+        ? state.children.where((c) => c.parentId == widget.parentId).toList()
+        : state.children;
+
     if (state.isLoading) return const LoadingScreen();
     
     if (state.errorMessage != null) {
@@ -56,7 +59,7 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
       );
     }
 
-    if (state.children.isEmpty) {
+    if (filteredChildren.isEmpty) {
       return SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Center(
@@ -70,7 +73,9 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Aucun enfant enregistré',
+                widget.parentId != null 
+                    ? 'Aucun enfant enregistré pour ce parent'
+                    : 'Aucun enfant enregistré',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -83,10 +88,10 @@ class _ChildrenTabState extends ConsumerState<ChildrenTab> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: state.children.length,
+      itemCount: filteredChildren.length,
       itemBuilder: (context, index) => ChildCard(
-        child: state.children[index],
-        onDelete: () => _deleteChild(state.children[index].id.toString()),
+        child: filteredChildren[index],
+        onDelete: () => _deleteChild(filteredChildren[index].id.toString()),
       ),
     );
   }

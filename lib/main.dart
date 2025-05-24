@@ -1,4 +1,6 @@
 // lib/main.dart
+import 'package:creche/data/models/user_model.dart';
+import 'package:creche/presentation/screens/parent/ParentDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constants/app_routes.dart';
@@ -19,7 +21,11 @@ class CrecheGestApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
     
+    // This key will force rebuild when auth state changes
+    final appKey = ValueKey(authState.isLoggedIn);
+
     return MaterialApp(
+      key: appKey,
       debugShowCheckedModeBanner: false,
       title: 'CrecheGest',
       theme: ThemeData(
@@ -32,15 +38,16 @@ class CrecheGestApp extends ConsumerWidget {
   }
 
   Widget _getHomeScreen(AuthState authState) {
-    
-    
-    if (authState.isLoggedIn) {
-      return const AdminDashboard(); // Route based on user role
+  if (authState.isLoading) return const LoadingScreen();
+  if (authState.isLoggedIn) {
+    if (authState.currentUser?.role == null) {
+      return const LoadingScreen();
     }
-    if(authState.isLoading){
-      return LoadingScreen();
-    }
-    
-    return const LoginScreen();
+    return authState.currentUser!.role == UserRole.admin
+        ? const AdminDashboard()
+        : const ParentDashboard();
   }
+  return const LoginScreen();
+}
+
 }

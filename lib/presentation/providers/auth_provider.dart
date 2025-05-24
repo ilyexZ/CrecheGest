@@ -2,6 +2,9 @@
 import 'dart:developer';
 
 import 'package:creche/core/services/api_service.dart';
+import 'package:creche/presentation/providers/child_provider.dart';
+import 'package:creche/presentation/providers/parent_provider.dart';
+import 'package:creche/presentation/providers/parent_request_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../data/models/user_model.dart';
@@ -43,6 +46,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       : _storage = const FlutterSecureStorage(),
         super(AuthState()) {
     _loadCredentials();
+    
   }
 
   // Load stored credentials and attempt auto-login
@@ -58,40 +62,45 @@ class AuthNotifier extends StateNotifier<AuthState> {
   state = state.copyWith(isLoading: true, errorMessage: null);
   try {
     final response = await _apiService.login(email, password);
-    print(response);
-    final userJson = response['user'] as Map<String, dynamic>;
-    final user = User.fromJson(userJson);
+    final user = User.fromJson(response['user']);
+    
+    // Add explicit role verification
+    if (user.role == null) {
+      throw Exception('User role not found');
+    }
+
     _apiService.setCredentials(email, password);
     state = state.copyWith(currentUser: user, isLoading: false);
+    
     if (store) {
       await _storage.write(key: _keyUsername, value: email);
       await _storage.write(key: _keyPassword, value: password);
     }
     return true;
   } catch (e) {
-    // Log the error for debugging
-    print('Login error: $e');
     state = state.copyWith(
       isLoading: false,
-      errorMessage: 'Invalid username or password', // Specific error
+      errorMessage: 'Failed to load user role: ${e.toString()}',
     );
     return false;
   }
 }
 
-  Future<void> logout() async {
+  Future<void> logout(WidgetRef ref) async {
   state = state.copyWith(isLoading: false);
-  
   try {
-    await _apiService.logout(); // This will now clear the auth header
-  } catch (_) {
-    // ignore errors but still clear local state
-  }
+    await _apiService.logout();
+  } catch (_) {}
   
   // Clear state and storage
   state = AuthState();
   await _storage.delete(key: _keyUsername);
   await _storage.delete(key: _keyPassword);
+
+  // Add this to reset all providers
+  ref.invalidate(childProvider);
+  ref.invalidate(parentProvider);
+  ref.invalidate(parentRequestProvider);
 }
 }
 

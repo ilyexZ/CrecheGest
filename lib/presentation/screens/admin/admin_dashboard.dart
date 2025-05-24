@@ -1,4 +1,5 @@
 // lib/presentation/screens/admin/admin_dashboard.dart
+import 'package:creche/presentation/screens/admin/requests_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_strings.dart';
@@ -16,10 +17,10 @@ class AdminDashboard extends ConsumerStatefulWidget {
 
 class _AdminDashboardState extends ConsumerState<AdminDashboard> {
   int _selectedIndex = 0;
-
-  final List<Widget> _tabs = [
-    const ChildrenTab(),
-    const ParentsTab(),
+  final List<Widget> _tabs = const [
+    ChildrenTab(),
+    ParentsTab(),
+    RequestsTab(), // Add this new tab
   ];
 
   void _onItemTapped(int index) {
@@ -53,6 +54,10 @@ class _AdminDashboardState extends ConsumerState<AdminDashboard> {
           BottomNavigationBarItem(
             icon: Icon(Icons.family_restroom),
             label: AppStrings.parents,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_add),
+            label: 'Demandes',
           ),
         ],
       ),
