@@ -10,7 +10,7 @@ class ApiService {
         : Platform.isAndroid || Platform.isIOS;
         
     return isMobile
-        ? 'http://192.168.236.145:8081/api' // Replace with actual IP
+        ? 'http://192.168.220.145:8081/api' // Replace with actual IP
         : 'http://localhost:8081/api';
   }
   final Dio dio;
